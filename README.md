@@ -192,4 +192,19 @@ http://localhost:4000/api/members
 GITHUB
 -------
 
-I created a new repository in order to store this information
+I created a new repository in order to store this information  niodeexpresstest
+
+https://github.com/jaimehernan95/niodeexpresstest.git
+
+Then I uploaded all the files to my new repo
+
+Command to use upload the file and projects on github.
+
+ cd/your project directory
+
+ 1) git init
+ 2) git add . or git add ['filename']
+ 3) git commit -m "Added files to Docker"
+ 4) git remote add origin https://github.com/jaimehernan95/niodeexpresstest.git
+ 5) git pull origin master
+ 6) git push origin master
