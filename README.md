@@ -37,26 +37,159 @@ Installing Express
 command: npm install express
 
  GET method
- ----------
+ ----------  
  
- Create a file index.js inside the folder
+ I used visual studio to edit and develop this API you can get it from this site (https://code.visualstudio.com/download)
+ 
+ Create a file index.js inside the folder expressnode. (see index file , line 1, 2 and 3)
 
-Express is a simple router for Node.js. It allows a developer to create simple endpoints quickly. 
+const express = require('express');
+const app = express();
 
-Dockerizing a Node.js web app
+I added an array inside the index.js with get method we will be able to get each user with valid ID. I  
+
+const members = [
+   {id:1, name: 'Hello Mark'},
+   {id:2, name: 'Hello Jhon'},
+   {id:3, name: 'Hello Jessica'},
+];
+
+// if we query the ID : 1 , it will be displayed { id:1, name: 'Hello Mark'} .If you query ID:4 it will return 'Hello Stranger' or error. The full address will be  http://localhost:4000/api/courses/1
 
 
-creat
-It should have a /hello endpoint that accepts an optional argument name and returns
-Hello <name>!. If no argument is provided, your endpoint should return Hello
-stranger!.
-Bonus:
-- Save the names in a datastore of your choice.
-- Test your code.
-- Keep it simple.
+app.get ('/api/members/:id', (req,res) => {
+   const member = members.find(c => c.id === parseInt(req.params.id));
+   if(!member) return res.status(404).send('Hello Stranger');
+   res.send(member);
+});
 
-Create a REST API with JSON ARRAY DATA
+const port = process.env.PORT || 4000;
 
-http://localhost:4000/api/members/4
+app.listen(port, () => console.log(`listening on port ${port}...`));
 
-# niodeexpresstest
+
+POST method to create a new member
+---------------------------------
+This method will allow to create a new member
+
+app.put('/api/members/:id', (req,res) => {
+   const member = members.find(c => c.id === parseInt(req.params.id));
+   if(!member) return res.status(404).send('Hello Stranger');
+
+   const {error} = validateMember(req.body);
+
+   if (error) return res.status(400).send (error.details[0].message);
+   
+   member.name = req.body.name;
+   res.send(member);
+});
+
+-- TESTING --
+-------------
+POSTMAN was used to test the GET and POST method :  https://www.getpostman.com
+
+I run the following command to start: nodemon index.js
+[nodemon] 2.0.2
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching dir(s): *.*
+[nodemon] watching extensions: js,mjs,json
+[nodemon] starting `node index.js`
+listening on port 4000...
+
+By click on SEND  GET  this address http://localhost:4000/api/members
+
+I will display all members in our array.
+
+[
+    {
+        "id": 1,
+        "name": "Hello Mark"
+    },
+    {
+        "id": 2,
+        "name": "Hello Jhon"
+    },
+    {
+        "id": 3,
+        "name": " Hello Jessica"
+    }
+]
+
+
+By click on SEND  GET  this address http://localhost:4000/api/members/1
+
+I will display the  member with ID : 1 
+
+{
+    "id": 1,
+    "name": "Hello Mark"
+}
+
+
+By click on SEND  GET  this address http://localhost:4000/api/members/5
+http://localhost:4000/api/members/5
+
+The message will be displayed : "Hello Stranger" because ID #5 doesn't exit in our array
+
+
+DOCKER
+-------
+install docker from this website :  https://docs.docker.com/docker-for-mac/install/
+
+
+The I Created a "DockerFile" and add the following information. 
+
+-- DockerFile-- 
+ROM node:8 
+
+WORKDIR /src
+
+COPY package*.json ./
+
+RUN npm install
+
+RUN npm install -g nodemon
+
+COPY . .
+
+EXPOSE 4000
+
+CMD ["node", "/src/index.js" ]
+
+
+Create another file docker-compose.yml and insert the following info
+ ------ docker-compose.yml. ------
+version: '3'
+services:
+  app:
+    container_name: expressnode
+    restart: always
+    build: .
+    ports:
+        - "4000:4000"
+        
+        
+Create another fil .gitignore
+---- .gitignore --- 
+node_modules
+npm-debug.log
+
+
+Run docker
+---------
+
+run the following command to start docker : docker-compose up
+
+To deploy your application across the swarm, use `docker stack deploy`.
+
+Starting expressnode ... done
+Attaching to expressnode
+expressnode | listening on port 4000...
+
+http://localhost:4000/api/members
+
+
+GITHUB
+-------
+
+I created a new repository in order to store this information
